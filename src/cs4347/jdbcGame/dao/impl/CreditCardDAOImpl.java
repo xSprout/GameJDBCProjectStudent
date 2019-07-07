@@ -90,12 +90,13 @@ public class CreditCardDAOImpl implements CreditCardDAO
             if ( keyRS.next() )
             {
             	// Get values from row
-	            String ccName = keyRS.getString("cc_name");
-	            String ccNumber = keyRS.getString("cc_number");
-	            String expDate = keyRS.getString("exp_date");
-	            int securityCode = keyRS.getInt("security_code");
-	            Long playerID = keyRS.getLong("player_id");
-	            Long id = keyRS.getLong("id");
+            	// ccName, ccNumber, expDate, securityCode, playerID
+	            String ccName = keyRS.getString("ccName");
+	            String ccNumber = keyRS.getString("ccNumber");
+	            String expDate = keyRS.getString("expDate");
+	            int securityCode = keyRS.getInt("securityCode");
+	            Long playerID = keyRS.getLong("playerID");
+	            Long id = keyRS.getLong("ID");
 	            
 	            // Create new CC object with row's values
 	            CreditCard creditCard = new CreditCard();
@@ -142,12 +143,12 @@ public class CreditCardDAOImpl implements CreditCardDAO
             while ( keyRS.next() )
             {
             	// Get values from row
-	            String ccName = keyRS.getString("cc_name");
-	            String ccNumber = keyRS.getString("cc_number");
-	            String expDate = keyRS.getString("exp_date");
-	            int securityCode = keyRS.getInt("security_code");
-	            Long pID = keyRS.getLong("player_id");
-	            Long id = keyRS.getLong("id");
+            	String ccName = keyRS.getString("ccName");
+	            String ccNumber = keyRS.getString("ccNumber");
+	            String expDate = keyRS.getString("expDate");
+	            int securityCode = keyRS.getInt("securityCode");
+	            Long pID = keyRS.getLong("playerID");
+	            Long id = keyRS.getLong("ID");
 	            
 	            // Create new CC object with row's values
 	            CreditCard creditCard = new CreditCard();

@@ -11,7 +11,10 @@
 package cs4347.jdbcGame.dao.impl;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import cs4347.jdbcGame.dao.GamesPlayedDAO;
@@ -20,11 +23,37 @@ import cs4347.jdbcGame.util.DAOException;
 
 public class GamesPlayedDAOImpl implements GamesPlayedDAO
 {
+	
+	private static final String insertSQL = "INSERT INTO gamesplayed (playerID, gameID, timeFinished, score) VALUES (?, ?, ?, ?);";
 
     @Override
     public GamesPlayed create(Connection connection, GamesPlayed gamesPlayed) throws SQLException, DAOException
     {
-        return null;
+    	if (gamesPlayed.getId() != null) {
+            throw new DAOException("Trying to insert Player with NON-NULL ID");
+        }
+
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
+            ps.setLong(1, gamesPlayed.getPlayerID());
+            ps.setLong(2, gamesPlayed.getGameID());
+            ps.setDate(3, new java.sql.Date(gamesPlayed.getTimeFinished().getTime()));
+            ps.setInt(4, gamesPlayed.getScore());
+            ps.executeUpdate();
+
+            // Copy the assigned ID to the customer instance.
+            ResultSet keyRS = ps.getGeneratedKeys();
+            keyRS.next();
+            int lastKey = keyRS.getInt(1);
+            gamesPlayed.setId((long) lastKey);
+            return gamesPlayed;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
     @Override

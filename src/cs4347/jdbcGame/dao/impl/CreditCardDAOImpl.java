@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import cs4347.jdbcGame.dao.CreditCardDAO;
@@ -23,8 +24,20 @@ import cs4347.jdbcGame.util.DAOException;
 
 public class CreditCardDAOImpl implements CreditCardDAO
 {
-    private static final String insertSQL = "INSERT INTO creditcard(cc_name, cc_number, exp_date, security_code, player_id) "
+    private static final String insertSQL = "INSERT INTO creditcard(ccName, ccNumber, expDate, securityCode, playerID) "
             + "VALUES(?,?,?,?,?);";
+    
+    private static final String selectSQL = "SELECT ccName, ccNumber, expDate, securityCode, playerID, ID FROM creditcard WHERE ID = ?;";
+    
+    private static final String selectPlayerSQL = "SELECT ccName, ccNumber, expDate, securityCode, playerID, ID FROM creditcard WHERE playerID = ?;";
+    
+    private static final String deleteSQL = "DELETE FROM creditcard WHERE ID = ?;";
+    
+    private static final String deletePlayerSQL = "DELETE FROM creditcard WHERE playerID = ?;";
+    
+    private static final String updateSQL = "UPDATE creditcard SET ccName = ?, ccNumber = ?, expDate = ?, securityCode = ?, playerID = ? WHERE ID = ?";
+    
+    private static final String countSQL = "SELECT COUNT(*) as count FROM creditcard";
 
     @Override
     public CreditCard create(Connection connection, CreditCard creditCard, Long playerID)
@@ -62,38 +75,202 @@ public class CreditCardDAOImpl implements CreditCardDAO
     @Override
     public CreditCard retrieve(Connection connection, Long ccID) throws SQLException, DAOException
     {
-        return null;
+    	if (ccID == null) {
+            throw new DAOException("Must provide ccID to pull records");
+        }
+
+        PreparedStatement ps = null;
+        try {
+        	// Execute SQL SELECT for given credit card ID
+            ps = connection.prepareStatement(selectSQL);
+            ps.setLong(1, ccID);
+            ResultSet keyRS = ps.executeQuery();
+            
+            // Ensure that we have a record
+            if ( keyRS.next() )
+            {
+            	// Get values from row
+	            String ccName = keyRS.getString("cc_name");
+	            String ccNumber = keyRS.getString("cc_number");
+	            String expDate = keyRS.getString("exp_date");
+	            int securityCode = keyRS.getInt("security_code");
+	            Long playerID = keyRS.getLong("player_id");
+	            Long id = keyRS.getLong("id");
+	            
+	            // Create new CC object with row's values
+	            CreditCard creditCard = new CreditCard();
+	            creditCard.setCcName(ccName);
+	            creditCard.setCcNumber(ccNumber);
+	            creditCard.setExpDate(expDate);
+	            creditCard.setSecurityCode(securityCode);
+	            creditCard.setPlayerID(playerID);
+	            creditCard.setId(id);
+	            
+	            // return CC object
+	            return creditCard;
+            }
+            return null;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
     @Override
     public List<CreditCard> retrieveCreditCardsForPlayer(Connection connection, Long playerID)
             throws SQLException, DAOException
     {
-        return null;
+    	if (playerID == null) {
+            throw new DAOException("Must provide playerID to pull records");
+        }
+
+    	// Ensure that we have records
+        PreparedStatement ps = null;
+        try {
+        	// Execute SQL SELECT for given player ID
+            ps = connection.prepareStatement(selectPlayerSQL);
+            ps.setLong(1, playerID);
+            ResultSet keyRS = ps.executeQuery();
+            
+            
+            // Create List object to hold our retrieved cards
+            List<CreditCard> cards = new ArrayList<CreditCard>();
+            
+            // Ensure that we have records and loop through them
+            while ( keyRS.next() )
+            {
+            	// Get values from row
+	            String ccName = keyRS.getString("cc_name");
+	            String ccNumber = keyRS.getString("cc_number");
+	            String expDate = keyRS.getString("exp_date");
+	            int securityCode = keyRS.getInt("security_code");
+	            Long pID = keyRS.getLong("player_id");
+	            Long id = keyRS.getLong("id");
+	            
+	            // Create new CC object with row's values
+	            CreditCard creditCard = new CreditCard();
+	            creditCard.setCcName(ccName);
+	            creditCard.setCcNumber(ccNumber);
+	            creditCard.setExpDate(expDate);
+	            creditCard.setSecurityCode(securityCode);
+	            creditCard.setPlayerID(pID);
+	            creditCard.setId(id);
+	            
+            	// push CC object to List
+	            cards.add(creditCard);
+            }
+            // return the List
+            return cards;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
     @Override
     public int update(Connection connection, CreditCard creditCard) throws SQLException, DAOException
     {
-        return 0;
+    	if (creditCard == null) {
+            throw new DAOException("Must provide CreditCard to update record");
+        }
+
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(updateSQL);
+            
+            // Get values from given CreditCard Object
+            String ccName = creditCard.getCcName();
+            String ccNumber = creditCard.getCcNumber();
+            String expDate = creditCard.getExpDate();
+            int securityCode = creditCard.getSecurityCode();
+            Long playerID = creditCard.getPlayerID();
+            Long id = creditCard.getId();
+            
+            // Execute query with given Credit Card Object
+            ps.setString(1, ccName);
+            ps.setString(2, ccNumber);
+            ps.setString(3, expDate);
+            ps.setInt(4, securityCode);
+            ps.setLong(5, playerID);
+            ps.setLong(6, id);
+            int rows = ps.executeUpdate();
+            return rows;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
     @Override
     public int delete(Connection connection, Long ccID) throws SQLException, DAOException
     {
-        return 0;
+    	if (ccID == null) {
+            throw new DAOException("Must have ccID in order to delete record");
+        }
+
+        PreparedStatement ps = null;
+        try {
+        	// Delete row based on given credit card ID
+            ps = connection.prepareStatement(deleteSQL);
+            ps.setLong(1, ccID);
+            int rows = ps.executeUpdate();
+            return rows;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
     @Override
     public int deleteForPlayer(Connection connection, Long playerID) throws SQLException, DAOException
     {
-        return 0;
+    	if (playerID == null) {
+            throw new DAOException("Must have playerID in order to delete record");
+        }
+
+        PreparedStatement ps = null;
+        try {
+        	// Delete row(s) based on player ID
+            ps = connection.prepareStatement(deletePlayerSQL);
+            ps.setLong(1, playerID);
+            int rows = ps.executeUpdate();
+            return rows;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
     @Override
     public int count(Connection connection) throws SQLException, DAOException
     {
-        return 0;
+        PreparedStatement ps = null;
+        try {
+        	// Count number of rows in CC Table
+            ps = connection.prepareStatement(countSQL);
+            ResultSet keyRS = ps.executeQuery();
+            if ( keyRS.next() )
+            {
+	            int count = keyRS.getInt("count");
+	            return count;
+            }
+            return 0;
+        }
+        finally {
+            if (ps != null && !ps.isClosed()) {
+                ps.close();
+            }
+        }
     }
 
 }

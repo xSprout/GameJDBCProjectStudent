@@ -43,6 +43,7 @@ public class CreditCardDAOImpl implements CreditCardDAO
     public CreditCard create(Connection connection, CreditCard creditCard, Long playerID)
             throws SQLException, DAOException
     {
+    	
         if (creditCard.getId() != null) {
             throw new DAOException("Trying to insert CreditCard with NON-NULL ID");
         }
@@ -57,12 +58,13 @@ public class CreditCardDAOImpl implements CreditCardDAO
             ps.setInt(4, creditCard.getSecurityCode());
             ps.setLong(5, playerID);
             ps.executeUpdate();
-
+            // System.out.println(("creditCard.getCcName()," + creditCard.getCcName() + "creditCard.getCcNumber()," + creditCard.getCcNumber() + "creditCard.getExpDate()," + creditCard.getExpDate() + "creditCard.getSecurityCode()," + creditCard.getSecurityCode() + "playerID," + playerID + ""));
             // Copy the assigned ID to the game instance.
             ResultSet keyRS = ps.getGeneratedKeys();
             keyRS.next();
             int lastKey = keyRS.getInt(1);
             creditCard.setId((long) lastKey);
+            creditCard.setPlayerID(playerID);
             return creditCard;
         }
         finally {
@@ -97,6 +99,8 @@ public class CreditCardDAOImpl implements CreditCardDAO
 	            int securityCode = keyRS.getInt("securityCode");
 	            Long playerID = keyRS.getLong("playerID");
 	            Long id = keyRS.getLong("ID");
+	            
+	            // System.out.println("ccName=" + ccName + ",ccNumber=" + ccNumber + ",expDate=" + expDate + ",securityCode=" + securityCode + ",playerID=" + playerID + ",id=" + id + "");
 	            
 	            // Create new CC object with row's values
 	            CreditCard creditCard = new CreditCard();
@@ -190,6 +194,8 @@ public class CreditCardDAOImpl implements CreditCardDAO
             int securityCode = creditCard.getSecurityCode();
             Long playerID = creditCard.getPlayerID();
             Long id = creditCard.getId();
+            
+            System.out.println("ccName=" + ccName + ",ccNumber=" + ccNumber + ",expDate=" + expDate + ",securityCode=" + securityCode + ",playerID=" + playerID + ",id=" + id + "");
             
             // Execute query with given Credit Card Object
             ps.setString(1, ccName);

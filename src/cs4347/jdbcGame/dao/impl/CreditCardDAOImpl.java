@@ -58,7 +58,7 @@ public class CreditCardDAOImpl implements CreditCardDAO
             ps.setInt(4, creditCard.getSecurityCode());
             ps.setLong(5, playerID);
             ps.executeUpdate();
-            // System.out.println(("creditCard.getCcName()," + creditCard.getCcName() + "creditCard.getCcNumber()," + creditCard.getCcNumber() + "creditCard.getExpDate()," + creditCard.getExpDate() + "creditCard.getSecurityCode()," + creditCard.getSecurityCode() + "playerID," + playerID + ""));
+            // 
             // Copy the assigned ID to the game instance.
             ResultSet keyRS = ps.getGeneratedKeys();
             keyRS.next();
@@ -100,7 +100,6 @@ public class CreditCardDAOImpl implements CreditCardDAO
 	            Long playerID = keyRS.getLong("playerID");
 	            Long id = keyRS.getLong("ID");
 	            
-	            // System.out.println("ccName=" + ccName + ",ccNumber=" + ccNumber + ",expDate=" + expDate + ",securityCode=" + securityCode + ",playerID=" + playerID + ",id=" + id + "");
 	            
 	            // Create new CC object with row's values
 	            CreditCard creditCard = new CreditCard();
@@ -195,7 +194,6 @@ public class CreditCardDAOImpl implements CreditCardDAO
             Long playerID = creditCard.getPlayerID();
             Long id = creditCard.getId();
             
-            System.out.println("ccName=" + ccName + ",ccNumber=" + ccNumber + ",expDate=" + expDate + ",securityCode=" + securityCode + ",playerID=" + playerID + ",id=" + id + "");
             
             // Execute query with given Credit Card Object
             ps.setString(1, ccName);

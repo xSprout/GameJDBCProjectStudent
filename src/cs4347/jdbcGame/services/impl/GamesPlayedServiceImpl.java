@@ -10,18 +10,16 @@
  */
 package cs4347.jdbcGame.services.impl;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import cs4347.jdbcGame.dao.GamesPlayedDAO;
-import cs4347.jdbcGame.dao.PlayerDAO;
-import cs4347.jdbcGame.dao.impl.ArrayList;
+import java.util.ArrayList;
 import cs4347.jdbcGame.dao.impl.GamesPlayedDAOImpl;
-import cs4347.jdbcGame.dao.impl.PlayerDAOImpl;
 import cs4347.jdbcGame.entity.GamesPlayed;
-import cs4347.jdbcGame.entity.Player;
 import cs4347.jdbcGame.services.GamesPlayedService;
 import cs4347.jdbcGame.util.DAOException;
 
@@ -38,7 +36,7 @@ public class GamesPlayedServiceImpl implements GamesPlayedService
     public GamesPlayed create(GamesPlayed gamesPlayed) throws DAOException, SQLException
     {
         if(gamesPlayed.getGameID() == null || gamesPlayed.getPlayerID() == null) {
-        	throw new DOAException("gamesPlayed must have a gameID and playerID");
+        	throw new DAOException("gamesPlayed must have a gameID and playerID");
         }
         
         GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
@@ -65,12 +63,9 @@ public class GamesPlayedServiceImpl implements GamesPlayedService
     }
 
     @Override
-    public GamesPlayed retrieveByID(Long gamePlayedID) throws DAOException, SQLException
+    public GamesPlayed retrieveByID(long gamePlayedID) throws DAOException, SQLException
     {
-        if(gamePlayedID == null) {
-        	throw new DAOException("Must Provide valid gamePlayedID");
-        }
-        
+
         GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
         
         Connection connection = dataSource.getConnection();
@@ -96,11 +91,8 @@ public class GamesPlayedServiceImpl implements GamesPlayedService
 
     
     @Override
-    public List<GamesPlayed> retrieveByPlayerGameID(Long playerID, Long gameID) throws DAOException, SQLException
+    public List<GamesPlayed> retrieveByPlayerGameID(long playerID, long gameID) throws DAOException, SQLException
     {
-    	if(gameID == null || playerID == null) {
-        	throw new DAOException("Must Provide valid gameID and PlayerID");
-        }
         
         GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
         
@@ -128,11 +120,8 @@ public class GamesPlayedServiceImpl implements GamesPlayedService
     }
 
     @Override
-    public List<GamesPlayed> retrieveByGame(Long gameID) throws DAOException, SQLException
+    public List<GamesPlayed> retrieveByGame(long gameID) throws DAOException, SQLException
     {
-    	if(gameID == null) {
-        	throw new DAOException("Must Provide valid gameID");
-        }
         
         GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
         
@@ -160,11 +149,8 @@ public class GamesPlayedServiceImpl implements GamesPlayedService
 
     
     @Override
-    public List<GamesPlayed> retrieveByPlayer(Long playerID) throws DAOException, SQLException
+    public List<GamesPlayed> retrieveByPlayer(long playerID) throws DAOException, SQLException
     {
-    	if(playerID == null) {
-        	throw new DAOException("Must Provide valid PlayerID");
-        }
         
         GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
         
@@ -222,11 +208,8 @@ public class GamesPlayedServiceImpl implements GamesPlayedService
 
     
     @Override
-    public int delete(Long gamePlayedID) throws DAOException, SQLException
+    public int delete(long gamePlayedID) throws DAOException, SQLException
     {
-        if(gamePlayedID == null) {
-        	throw new DAOException("Must provide a valid gamePlayedID");
-        }
         
         GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
         

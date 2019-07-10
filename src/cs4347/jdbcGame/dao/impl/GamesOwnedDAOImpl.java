@@ -31,7 +31,7 @@ public class GamesOwnedDAOImpl implements GamesOwnedDAO
     public GamesOwned create(Connection connection, GamesOwned gamesOwned) throws SQLException, DAOException
     {
     	if (gamesOwned.getId() != null) {
-            throw new DAOException("Trying to insert Player with NON-NULL ID");
+            throw new DAOException("Trying to insert Gamesowned with NON-NULL ID");
         }
 
         PreparedStatement ps = null;

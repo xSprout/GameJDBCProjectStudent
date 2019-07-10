@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 
 import cs4347.jdbcGame.dao.CreditCardDAO;
 import cs4347.jdbcGame.dao.PlayerDAO;
-import cs4347.jdbcGame.dao.impl.ArrayList;
+import java.util.ArrayList;
 import cs4347.jdbcGame.dao.impl.CreditCardDAOImpl;
 import cs4347.jdbcGame.dao.impl.PlayerDAOImpl;
 import cs4347.jdbcGame.entity.CreditCard;
@@ -52,10 +52,15 @@ public class PlayerServiceImpl implements PlayerService
             connection.setAutoCommit(false);
             Player p1 = playerDAO.create(connection, player);
             Long playerID = p1.getId();
-            for (CreditCard creditCard : player.getCreditCards()) {
+            List<CreditCard> cards = player.getCreditCards();
+            for (int counter = 0; counter < cards.size(); counter++)
+            {
+            	CreditCard creditCard = cards.get(counter);
                 creditCard.setPlayerID(playerID);
-                ccDAO.create(connection, creditCard, playerID);
+                creditCard = ccDAO.create(connection, creditCard, playerID);
+                cards.set(counter, creditCard);
             }
+            p1.setCreditCards(cards);
             connection.commit();
             return p1;
         } catch (Exception ex) {
@@ -81,12 +86,15 @@ public class PlayerServiceImpl implements PlayerService
         }
         
         PlayerDAO playerDAO = new PlayerDAOImpl();
+        CreditCardDAO ccDAO = new CreditCardDAOImpl();
         
         Connection connection = dataSource.getConnection();
         
         try {
             connection.setAutoCommit(false);
             Player p1 = playerDAO.retrieve(connection, playerID);
+            if(p1 != null)
+            	p1.setCreditCards(ccDAO.retrieveCreditCardsForPlayer(connection, playerID));
             connection.commit();
             return p1;
         }catch (Exception ex) {
@@ -114,12 +122,24 @@ public class PlayerServiceImpl implements PlayerService
         }
         
         PlayerDAO playerDAO = new PlayerDAOImpl();
-        
+        CreditCardDAO ccDAO = new CreditCardDAOImpl();
+        Long playerID = player.getId();
         Connection connection = dataSource.getConnection();
         
         try {
             connection.setAutoCommit(false);
             int upd = playerDAO.update(connection, player);
+            ccDAO.deleteForPlayer(connection, playerID);
+            List<CreditCard> cards = player.getCreditCards();
+            for (int counter = 0; counter < cards.size(); counter++)
+            {
+            	CreditCard creditCard = cards.get(counter);
+                creditCard.setPlayerID(playerID);
+                creditCard.setId(null);
+                creditCard = ccDAO.create(connection, creditCard, playerID);
+                cards.set(counter, creditCard);
+            }
+            player.setCreditCards(cards);
             connection.commit();
             return upd;
         }catch (Exception ex) {
@@ -151,8 +171,8 @@ public class PlayerServiceImpl implements PlayerService
          
          try {
              connection.setAutoCommit(false);
-             int del = playerDAO.delete(connection, playerID);
              ccDAO.deleteForPlayer(connection, playerID);
+             int del = playerDAO.delete(connection, playerID);
              connection.commit();
              return del;
          }catch (Exception ex) {
@@ -234,19 +254,29 @@ public class PlayerServiceImpl implements PlayerService
     @Override
     public int countCreditCardsForPlayer(Long playerID) throws DAOException, SQLException
     {
-    	/*
-    	 if(playerID == null) {
-         	throw new DAOException("Must provide a valid playerID");
-         }
-    	 
-    	 CreditCardDAO ccDAO = new CreditCardDAOImpl();
-    	 Connection connection = dataSource.getConnection();
-    	 
-    	 try {
-    		 connection.setAutoCommit(false);
-    		 ccDAO.retrieveCreditCardsForPlayer(connection, playerID);
-    	 }
-    	 */
+		 if(playerID == null) {
+		 	throw new DAOException("Must provide a valid playerID");
+		 }
+		 
+		 CreditCardDAO ccDAO = new CreditCardDAOImpl();
+		 Connection connection = dataSource.getConnection();
+		 
+		 try {
+			 connection.setAutoCommit(false);
+			 List<CreditCard> cards = ccDAO.retrieveCreditCardsForPlayer(connection, playerID);
+			 return cards.size();
+		 }catch (Exception ex) {
+		        connection.rollback();
+		    throw ex;
+		}
+		finally {
+		 	if(connection != null) {
+		 		 connection.setAutoCommit(true);
+		 	}
+		 	if (connection != null && !connection.isClosed()) {
+		         connection.close();
+		     }
+		 }
     }
 
 }

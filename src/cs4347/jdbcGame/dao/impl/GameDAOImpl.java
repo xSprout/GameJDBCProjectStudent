@@ -26,7 +26,7 @@ import cs4347.jdbcGame.util.DAOException;
 public class GameDAOImpl implements GameDAO
 {
 
-    private static final String insertSQL = "INSERT INTO games (title, description, releaseDate, version) VALUES (?, ?, ?, ?);";
+    private static final String insertSQL = "INSERT INTO game (title, description, releaseDate, version) VALUES (?, ?, ?, ?);";
 
     @Override
     public Game create(Connection connection, Game game) throws SQLException, DAOException
@@ -58,7 +58,7 @@ public class GameDAOImpl implements GameDAO
         }
     }
 
-    final static String selectSQL = "SELECT id, title, description, releaseDate, version FROM games where id = ?";
+    final static String selectSQL = "SELECT id, title, description, releaseDate, version FROM game where id = ?";
 
     @Override
     public Game retrieve(Connection connection, Long gameID) throws SQLException, DAOException
@@ -86,7 +86,7 @@ public class GameDAOImpl implements GameDAO
         }
     }
 
-    final static String updateSQL = "UPDATE games SET title = ?, description = ?, releaseDate = ?, version = ? WHERE id = ?;";
+    final static String updateSQL = "UPDATE game SET title = ?, description = ?, releaseDate = ?, version = ? WHERE id = ?;";
 
     @Override
     public int update(Connection connection, Game game) throws SQLException, DAOException
@@ -115,7 +115,7 @@ public class GameDAOImpl implements GameDAO
         }
     }
 
-    final static String deleteSQL = "delete from games where id = ?;";
+    final static String deleteSQL = "delete from game where id = ?;";
 
     @Override
     public int delete(Connection connection, Long id) throws SQLException, DAOException
@@ -139,7 +139,7 @@ public class GameDAOImpl implements GameDAO
         }
     }
 
-    final static String countSQL = "select count(*) from games";
+    final static String countSQL = "select count(*) from game";
 
     @Override
     public int count(Connection connection) throws SQLException, DAOException
@@ -161,7 +161,7 @@ public class GameDAOImpl implements GameDAO
         }
     }
 
-    final static String retrieveByTitleSQL = "select ID,title,description,releaseDate,version from games where title like ?";
+    final static String retrieveByTitleSQL = "select ID,title,description,releaseDate,version from game where title like ?";
 
     @Override
     public List<Game> retrieveByTitle(Connection connection, String title) throws SQLException, DAOException
@@ -186,7 +186,7 @@ public class GameDAOImpl implements GameDAO
         }
     }
 
-    final static String retrieveByRelDate = "select ID,title,description,releaseDate,version from games where releaseDate between ? and ?";
+    final static String retrieveByRelDate = "select ID,title,description,releaseDate,version from game where releaseDate between ? and ?";
 
     @Override
     public List<Game> retrieveByReleaseDate(Connection connection, Date start, Date end)

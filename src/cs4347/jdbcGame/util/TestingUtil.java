@@ -76,7 +76,7 @@ public class TestingUtil
 
     // This query retrieves all game IDs in the result set
     // e.g. "select id from game"
-    static String selectGameIDs = "select id from games";
+    static String selectGameIDs = "select id from game";
 
     /**
      * Return N current Game IDs for testing purposes.

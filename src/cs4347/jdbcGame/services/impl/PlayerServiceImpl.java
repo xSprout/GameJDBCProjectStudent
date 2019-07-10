@@ -19,6 +19,7 @@ import javax.sql.DataSource;
 
 import cs4347.jdbcGame.dao.CreditCardDAO;
 import cs4347.jdbcGame.dao.PlayerDAO;
+import cs4347.jdbcGame.dao.impl.ArrayList;
 import cs4347.jdbcGame.dao.impl.CreditCardDAOImpl;
 import cs4347.jdbcGame.dao.impl.PlayerDAOImpl;
 import cs4347.jdbcGame.entity.CreditCard;
@@ -35,6 +36,7 @@ public class PlayerServiceImpl implements PlayerService
         this.dataSource = dataSource;
     }
 
+    
     @Override
     public Player create(Player player) throws DAOException, SQLException
     {
@@ -70,34 +72,160 @@ public class PlayerServiceImpl implements PlayerService
         }
     }
 
+    
     @Override
     public Player retrieve(Long playerID) throws DAOException, SQLException
     {
-        return null;
+        if(playerID == null) {
+        	throw new DAOException("Must provide a valid playerID");
+        }
+        
+        PlayerDAO playerDAO = new PlayerDAOImpl();
+        
+        Connection connection = dataSource.getConnection();
+        
+        try {
+            connection.setAutoCommit(false);
+            Player p1 = playerDAO.retrieve(connection, playerID);
+            connection.commit();
+            return p1;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+        	if(connection != null) {
+        		 connection.setAutoCommit(true);
+        	}
+        	if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
+        
     }
 
+    
+    
     @Override
     public int update(Player player) throws DAOException, SQLException
     {
-        return 0;
+        if(player == null) {
+        	throw new DAOException("invalid player object");
+        }
+        
+        PlayerDAO playerDAO = new PlayerDAOImpl();
+        
+        Connection connection = dataSource.getConnection();
+        
+        try {
+            connection.setAutoCommit(false);
+            int upd = playerDAO.update(connection, player);
+            connection.commit();
+            return upd;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+        	if(connection != null) {
+        		 connection.setAutoCommit(true);
+        	}
+        	if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
     }
 
+    
     @Override
     public int delete(Long playerID) throws DAOException, SQLException
     {
-        return 0;
+    	 if(playerID == null) {
+         	throw new DAOException("Must provide a valid playerID");
+         }
+         
+         PlayerDAO playerDAO = new PlayerDAOImpl();
+         CreditCardDAO ccDAO = new CreditCardDAOImpl();
+         
+         Connection connection = dataSource.getConnection();
+         
+         try {
+             connection.setAutoCommit(false);
+             int del = playerDAO.delete(connection, playerID);
+             ccDAO.deleteForPlayer(connection, playerID);
+             connection.commit();
+             return del;
+         }catch (Exception ex) {
+             connection.rollback();
+             throw ex;
+         }
+         finally {
+         	if(connection != null) {
+         		 connection.setAutoCommit(true);
+         	}
+         	if (connection != null && !connection.isClosed()) {
+                 connection.close();
+             }
+         }    
     }
 
+    
     @Override
     public int count() throws DAOException, SQLException
     {
-        return 0;
+    	PlayerDAO playerDAO = new PlayerDAOImpl();
+         
+        Connection connection = dataSource.getConnection();    
+        
+        try {
+        	connection.setAutoCommit(false);
+        	int count = playerDAO.count(connection);
+        	connection.commit();
+        	return count;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+         	if(connection != null) {
+         		 connection.setAutoCommit(true);
+         	}
+         	if (connection != null && !connection.isClosed()) {
+                 connection.close();
+             }
+         }
     }
 
+    
     @Override
     public List<Player> retrieveByJoinDate(Date start, Date end) throws DAOException, SQLException
     {
-        return null;
+        if(start == null || end == null) {
+        	throw new DAOException("Must provide a valid date");
+        }
+        
+        PlayerDAO playerDAO = new PlayerDAOImpl();
+        
+        Connection connection = dataSource.getConnection();
+        
+        try {
+        	connection.setAutoCommit(false);
+    		List<Player> pList = new ArrayList<>();
+    		pList = playerDAO.retrieveByJoinDate(connection, start, end);
+    		connection.commit();
+    		return pList;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+         	if(connection != null) {
+         		 connection.setAutoCommit(true);
+         	}
+         	if (connection != null && !connection.isClosed()) {
+                 connection.close();
+             }
+         }
     }
 
     /**
@@ -106,7 +234,19 @@ public class PlayerServiceImpl implements PlayerService
     @Override
     public int countCreditCardsForPlayer(Long playerID) throws DAOException, SQLException
     {
-        return 0;
+    	/*
+    	 if(playerID == null) {
+         	throw new DAOException("Must provide a valid playerID");
+         }
+    	 
+    	 CreditCardDAO ccDAO = new CreditCardDAOImpl();
+    	 Connection connection = dataSource.getConnection();
+    	 
+    	 try {
+    		 connection.setAutoCommit(false);
+    		 ccDAO.retrieveCreditCardsForPlayer(connection, playerID);
+    	 }
+    	 */
     }
 
 }

@@ -15,7 +15,13 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import cs4347.jdbcGame.dao.GamesPlayedDAO;
+import cs4347.jdbcGame.dao.PlayerDAO;
+import cs4347.jdbcGame.dao.impl.ArrayList;
+import cs4347.jdbcGame.dao.impl.GamesPlayedDAOImpl;
+import cs4347.jdbcGame.dao.impl.PlayerDAOImpl;
 import cs4347.jdbcGame.entity.GamesPlayed;
+import cs4347.jdbcGame.entity.Player;
 import cs4347.jdbcGame.services.GamesPlayedService;
 import cs4347.jdbcGame.util.DAOException;
 
@@ -31,49 +37,245 @@ public class GamesPlayedServiceImpl implements GamesPlayedService
     @Override
     public GamesPlayed create(GamesPlayed gamesPlayed) throws DAOException, SQLException
     {
-        return null;
+        if(gamesPlayed.getGameID() == null || gamesPlayed.getPlayerID() == null) {
+        	throw new DOAException("gamesPlayed must have a gameID and playerID");
+        }
+        
+        GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
+        
+        Connection connection = dataSource.getConnection();
+        try {
+        	connection.setAutoCommit(false);
+        	GamesPlayed gp = gamesPlayedDAO.create(connection, gamesPlayed);
+        	connection.commit();
+        	return gp;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+            if (connection != null) {
+                connection.setAutoCommit(true);
+            }
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
+        
     }
 
     @Override
-    public GamesPlayed retrieveByID(long gamePlayedID) throws DAOException, SQLException
+    public GamesPlayed retrieveByID(Long gamePlayedID) throws DAOException, SQLException
     {
-        return null;
+        if(gamePlayedID == null) {
+        	throw new DAOException("Must Provide valid gamePlayedID");
+        }
+        
+        GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
+        
+        Connection connection = dataSource.getConnection();
+        
+        try {
+            connection.setAutoCommit(false);
+            GamesPlayed gp = gamesPlayedDAO.retrieveID(connection, gamePlayedID);
+            connection.commit();
+            return gp;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+        	if(connection != null) {
+        		 connection.setAutoCommit(true);
+        	}
+        	if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
+    }
+
+    
+    @Override
+    public List<GamesPlayed> retrieveByPlayerGameID(Long playerID, Long gameID) throws DAOException, SQLException
+    {
+    	if(gameID == null || playerID == null) {
+        	throw new DAOException("Must Provide valid gameID and PlayerID");
+        }
+        
+        GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
+        
+        Connection connection = dataSource.getConnection();
+        
+        try {
+            connection.setAutoCommit(false);
+            List<GamesPlayed> gamesp = new ArrayList<>();
+            gamesp = gamesPlayedDAO.retrieveByPlayerGameID(connection, playerID, gameID);
+            connection.commit();
+            return gamesp;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+        	if(connection != null) {
+        		 connection.setAutoCommit(true);
+        	}
+        	if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
+        
     }
 
     @Override
-    public List<GamesPlayed> retrieveByPlayerGameID(long playerID, long gameID) throws DAOException, SQLException
+    public List<GamesPlayed> retrieveByGame(Long gameID) throws DAOException, SQLException
     {
-        return null;
+    	if(gameID == null) {
+        	throw new DAOException("Must Provide valid gameID");
+        }
+        
+        GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
+        
+        Connection connection = dataSource.getConnection();
+        
+        try {
+            connection.setAutoCommit(false);
+            List<GamesPlayed> gamesp = new ArrayList<>();
+            gamesp = gamesPlayedDAO.retrieveByGame(connection, gameID);
+            connection.commit();
+            return gamesp;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+        	if(connection != null) {
+        		 connection.setAutoCommit(true);
+        	}
+        	if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
     }
 
+    
     @Override
-    public List<GamesPlayed> retrieveByGame(long gameID) throws DAOException, SQLException
+    public List<GamesPlayed> retrieveByPlayer(Long playerID) throws DAOException, SQLException
     {
-        return null;
-    }
-
-    @Override
-    public List<GamesPlayed> retrieveByPlayer(long playerID) throws DAOException, SQLException
-    {
-        return null;
+    	if(playerID == null) {
+        	throw new DAOException("Must Provide valid PlayerID");
+        }
+        
+        GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
+        
+        Connection connection = dataSource.getConnection();
+        
+        try {
+            connection.setAutoCommit(false);
+            List<GamesPlayed> gamesp = new ArrayList<>();
+            gamesp = gamesPlayedDAO.retrieveByPlayer(connection, playerID);
+            connection.commit();
+            return gamesp;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+        	if(connection != null) {
+        		 connection.setAutoCommit(true);
+        	}
+        	if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
     }
 
     @Override
     public int update(GamesPlayed gamesPlayed) throws DAOException, SQLException
     {
-        return 0;
+        if(gamesPlayed == null) {
+        	throw new DAOException("invalid gamesPlayed object");
+        }
+        
+        GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
+        
+        Connection connection = dataSource.getConnection();
+        
+        try {
+        	connection.setAutoCommit(false);
+        	int upd = gamesPlayedDAO.update(connection, gamesPlayed);
+        	connection.commit();
+        	return upd;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+        	if(connection != null) {
+        		 connection.setAutoCommit(true);
+        	}
+        	if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
     }
 
+    
     @Override
-    public int delete(long gamePlayedID) throws DAOException, SQLException
+    public int delete(Long gamePlayedID) throws DAOException, SQLException
     {
-        return 0;
+        if(gamePlayedID == null) {
+        	throw new DAOException("Must provide a valid gamePlayedID");
+        }
+        
+        GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
+        
+        Connection connection = dataSource.getConnection();
+        
+        	try {
+        		connection.setAutoCommit(false);
+        		int del = gamesPlayedDAO.delete(connection, gamePlayedID);
+        		connection.commit();
+        		return del;
+        	}catch (Exception ex) {
+                connection.rollback();
+                throw ex;
+            }
+            finally {
+            	if(connection != null) {
+            		 connection.setAutoCommit(true);
+            	}
+            	if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            }    
+        
     }
 
     @Override
     public int count() throws DAOException, SQLException
     {
-        return 0;
+    	GamesPlayedDAO gamesPlayedDAO = new GamesPlayedDAOImpl();
+        
+        Connection connection = dataSource.getConnection();
+        
+        try {
+        	connection.setAutoCommit(false);
+        	int count = gamesPlayedDAO.count(connection);
+        	connection.commit();
+        	return count;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+         	if(connection != null) {
+         		 connection.setAutoCommit(true);
+         	}
+         	if (connection != null && !connection.isClosed()) {
+                 connection.close();
+             }
+         }
     }
 
 }

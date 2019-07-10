@@ -43,6 +43,7 @@ public class CreditCardDAOImpl implements CreditCardDAO
     public CreditCard create(Connection connection, CreditCard creditCard, Long playerID)
             throws SQLException, DAOException
     {
+    	
         if (creditCard.getId() != null) {
             throw new DAOException("Trying to insert CreditCard with NON-NULL ID");
         }
@@ -57,12 +58,13 @@ public class CreditCardDAOImpl implements CreditCardDAO
             ps.setInt(4, creditCard.getSecurityCode());
             ps.setLong(5, playerID);
             ps.executeUpdate();
-
+            // 
             // Copy the assigned ID to the game instance.
             ResultSet keyRS = ps.getGeneratedKeys();
             keyRS.next();
             int lastKey = keyRS.getInt(1);
             creditCard.setId((long) lastKey);
+            creditCard.setPlayerID(playerID);
             return creditCard;
         }
         finally {
@@ -90,12 +92,14 @@ public class CreditCardDAOImpl implements CreditCardDAO
             if ( keyRS.next() )
             {
             	// Get values from row
-	            String ccName = keyRS.getString("cc_name");
-	            String ccNumber = keyRS.getString("cc_number");
-	            String expDate = keyRS.getString("exp_date");
-	            int securityCode = keyRS.getInt("security_code");
-	            Long playerID = keyRS.getLong("player_id");
-	            Long id = keyRS.getLong("id");
+            	// ccName, ccNumber, expDate, securityCode, playerID
+	            String ccName = keyRS.getString("ccName");
+	            String ccNumber = keyRS.getString("ccNumber");
+	            String expDate = keyRS.getString("expDate");
+	            int securityCode = keyRS.getInt("securityCode");
+	            Long playerID = keyRS.getLong("playerID");
+	            Long id = keyRS.getLong("ID");
+	            
 	            
 	            // Create new CC object with row's values
 	            CreditCard creditCard = new CreditCard();
@@ -142,12 +146,12 @@ public class CreditCardDAOImpl implements CreditCardDAO
             while ( keyRS.next() )
             {
             	// Get values from row
-	            String ccName = keyRS.getString("cc_name");
-	            String ccNumber = keyRS.getString("cc_number");
-	            String expDate = keyRS.getString("exp_date");
-	            int securityCode = keyRS.getInt("security_code");
-	            Long pID = keyRS.getLong("player_id");
-	            Long id = keyRS.getLong("id");
+            	String ccName = keyRS.getString("ccName");
+	            String ccNumber = keyRS.getString("ccNumber");
+	            String expDate = keyRS.getString("expDate");
+	            int securityCode = keyRS.getInt("securityCode");
+	            Long pID = keyRS.getLong("playerID");
+	            Long id = keyRS.getLong("ID");
 	            
 	            // Create new CC object with row's values
 	            CreditCard creditCard = new CreditCard();
@@ -189,6 +193,7 @@ public class CreditCardDAOImpl implements CreditCardDAO
             int securityCode = creditCard.getSecurityCode();
             Long playerID = creditCard.getPlayerID();
             Long id = creditCard.getId();
+            
             
             // Execute query with given Credit Card Object
             ps.setString(1, ccName);

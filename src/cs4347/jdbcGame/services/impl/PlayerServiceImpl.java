@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 
 import cs4347.jdbcGame.dao.CreditCardDAO;
 import cs4347.jdbcGame.dao.PlayerDAO;
-import cs4347.jdbcGame.dao.impl.ArrayList;
+import java.util.ArrayList;
 import cs4347.jdbcGame.dao.impl.CreditCardDAOImpl;
 import cs4347.jdbcGame.dao.impl.PlayerDAOImpl;
 import cs4347.jdbcGame.entity.CreditCard;
@@ -234,19 +234,29 @@ public class PlayerServiceImpl implements PlayerService
     @Override
     public int countCreditCardsForPlayer(Long playerID) throws DAOException, SQLException
     {
-    	/*
-    	 if(playerID == null) {
-         	throw new DAOException("Must provide a valid playerID");
-         }
-    	 
-    	 CreditCardDAO ccDAO = new CreditCardDAOImpl();
-    	 Connection connection = dataSource.getConnection();
-    	 
-    	 try {
-    		 connection.setAutoCommit(false);
-    		 ccDAO.retrieveCreditCardsForPlayer(connection, playerID);
-    	 }
-    	 */
+		 if(playerID == null) {
+		 	throw new DAOException("Must provide a valid playerID");
+		 }
+		 
+		 CreditCardDAO ccDAO = new CreditCardDAOImpl();
+		 Connection connection = dataSource.getConnection();
+		 
+		 try {
+			 connection.setAutoCommit(false);
+			 List<CreditCard> cards = ccDAO.retrieveCreditCardsForPlayer(connection, playerID);
+			 return cards.size();
+		 }catch (Exception ex) {
+		        connection.rollback();
+		    throw ex;
+		}
+		finally {
+		 	if(connection != null) {
+		 		 connection.setAutoCommit(true);
+		 	}
+		 	if (connection != null && !connection.isClosed()) {
+		         connection.close();
+		     }
+		 }
     }
 
 }

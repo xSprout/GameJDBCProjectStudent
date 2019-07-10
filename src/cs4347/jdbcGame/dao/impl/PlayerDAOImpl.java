@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class PlayerDAOImpl implements PlayerDAO
 
     private static final String insertSQL = "INSERT INTO player (firstName, lastName, join_Date, email) VALUES (?, ?, ?, ?);";
     
-    private static final String selectSQL = "SELECT firstName, lastName, join_Date, email, ID, FROM player WHERE ID = ?;";
+    private static final String selectSQL = "SELECT firstName, lastName, join_Date, email, ID FROM player WHERE ID = ?;";
     
     private static final String updateSQL = "UPDATE player SET firstName = ?, lastName = ?, join_Date = ?, email = ? WHERE ID = ?;";
     
@@ -35,7 +36,7 @@ public class PlayerDAOImpl implements PlayerDAO
     
     private static final String countSQL = "SELECT COUNT(*) as count FROM player;";
     
-    private static final String joinDateSQL = "SELECT firstName, lastName, join_Date, email FROM player WHERE join_Date BETWEEN ? and ?;";
+    private static final String joinDateSQL = "SELECT firstName, lastName, join_Date, email, ID FROM player WHERE join_Date BETWEEN ? and ?;";
 
     @Override
     public Player create(Connection connection, Player player) throws SQLException, DAOException
@@ -139,7 +140,7 @@ public class PlayerDAOImpl implements PlayerDAO
     		
     		ps.setString(1, firstName);
     		ps.setString(2, lastName);
-    		ps.setDate(3, joinDate);
+    		ps.setDate(3, new java.sql.Date(joinDate.getTime()));
     		ps.setString(4, email);
     		ps.setLong(5, id);
     		int rows = ps.executeUpdate();
@@ -171,7 +172,7 @@ public class PlayerDAOImpl implements PlayerDAO
         	return rows;
         }
         finally {
-        	if(ps != null && !ps.isclosed()){
+        	if(ps != null && !ps.isClosed()){
         		ps.close();
         	}
         }
@@ -214,8 +215,8 @@ public class PlayerDAOImpl implements PlayerDAO
     		//ready up the sql statement in ps
     		ps = connection.prepareStatement(joinDateSQL);
     		//set the start date and end date
-    		ps.setDate(1, start);
-    		ps.setDate(2, end);
+    		ps.setDate(1, new java.sql.Date(start.getTime()));
+    		ps.setDate(2, new java.sql.Date(end.getTime()));
     		
     		//execute the statement
     		ResultSet keyRS = ps.executeQuery();
@@ -244,7 +245,7 @@ public class PlayerDAOImpl implements PlayerDAO
     			//put the new player object on the array list
     			playerList.add(player);
     		}
-    		return palyerList;	
+    		return playerList;	
     	}
     	//close ps
     	finally {

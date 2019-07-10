@@ -15,6 +15,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import cs4347.jdbcGame.dao.GamesPlayedDAO;
@@ -26,19 +28,19 @@ public class GamesPlayedDAOImpl implements GamesPlayedDAO
 	
 	private static final String insertSQL = "INSERT INTO gamesplayed (playerID, gameID, timeFinished, score) VALUES (?, ?, ?, ?);";
 
-	private static final String selectSQL = "SELECT ID, playerID, gameID, timeFinished, score WHERE ID = ?;";
+	private static final String selectSQL = "SELECT ID, playerID, gameID, timeFinished, score FROM gamesplayed WHERE ID = ?;";
 	
-	private static final String selectPlayeraGameSQL = "SELECT ID, playerID, gameID, timeFinished, score WHERE playerID = ? AND gameID = ?;";
+	private static final String selectPlayeraGameSQL = "SELECT ID, playerID, gameID, timeFinished, score FROM gamesplayed WHERE playerID = ? AND gameID = ?;";
 	
-	private static final String selectPlayerSQL = "SELECT ID, playerID, gameID, timeFinished, score WHERE playerID = ?;";
+	private static final String selectPlayerSQL = "SELECT ID, playerID, gameID, timeFinished, score FROM gamesplayed WHERE playerID = ?;";
 	
-	private static final String selectGameSQL = "SELECT ID, playerID, gameID, timeFinished, score WHERE gameID = ?;";
+	private static final String selectGameSQL = "SELECT ID, playerID, gameID, timeFinished, score FROM gamesplayed WHERE gameID = ?;";
 	
-	private static final String updateSQL = "UPDATE gamesplayed SET ID = ?, playerID = ?, gameID = ?, timeFinished = ?, score = ? WHERE ID = ?;";
+	private static final String updateSQL = "UPDATE gamesplayed SET playerID = ?, gameID = ?, timeFinished = ?, score = ? WHERE ID = ?;";
 	
 	private static final String deleteSQL = "DELETE FROM gamesplayed WHERE ID = ?;";
 	
-	private static final String countSQL = "SELECT COUNT(*) as count from gamesPlayed;";
+	private static final String countSQL = "SELECT COUNT(*) as count from gamesplayed;";
     @Override
     public GamesPlayed create(Connection connection, GamesPlayed gamesPlayed) throws SQLException, DAOException
     {
@@ -126,7 +128,7 @@ public class GamesPlayedDAOImpl implements GamesPlayedDAO
     		ps = connection.prepareStatement(selectPlayeraGameSQL);
     		ps.setLong(1, playerID);
     		ps.setLong(2, gameID);
-    		ResultSet keyRS = ps.exectueQuery();
+    		ResultSet keyRS = ps.executeQuery();
     		
     		List<GamesPlayed> games = new ArrayList<>();
     		
@@ -146,7 +148,7 @@ public class GamesPlayedDAOImpl implements GamesPlayedDAO
     			
     			games.add(gp);
     		}
-    		return null;
+    		return games;
     	}
     	finally {
             if (ps != null && !ps.isClosed()) {
@@ -168,9 +170,9 @@ public class GamesPlayedDAOImpl implements GamesPlayedDAO
     	try {
     		ps = connection.prepareStatement(selectPlayerSQL);
     		ps.setLong(1, playerID);
-    		ResultSet keyRS = ps.exectueQuery();
+    		ResultSet keyRS = ps.executeQuery();
     		
-    		List<GamesPlayed> games = new ArrayList<>();
+    		List<GamesPlayed> games = new ArrayList<GamesPlayed>();
     		
     		while(keyRS.next()) {
     			Long id = keyRS.getLong("ID");
@@ -188,7 +190,7 @@ public class GamesPlayedDAOImpl implements GamesPlayedDAO
     			
     			games.add(gp);
     		}
-    		return null;
+    		return games;
     	}
     	finally {
             if (ps != null && !ps.isClosed()) {
@@ -201,7 +203,7 @@ public class GamesPlayedDAOImpl implements GamesPlayedDAO
     public List<GamesPlayed> retrieveByGame(Connection connection, Long gameID) throws SQLException, DAOException
     {
         if(gameID == null) {
-        	throw new DOAException("Invalid gameID given");
+        	throw new DAOException("Invalid gameID given");
         }
         
         PreparedStatement ps = null;
@@ -209,7 +211,7 @@ public class GamesPlayedDAOImpl implements GamesPlayedDAO
     	try {
     		ps = connection.prepareStatement(selectGameSQL);
     		ps.setLong(1, gameID);
-    		ResultSet keyRS = ps.exectueQuery();
+    		ResultSet keyRS = ps.executeQuery();
     		
     		List<GamesPlayed> games = new ArrayList<>();
     		
@@ -229,7 +231,7 @@ public class GamesPlayedDAOImpl implements GamesPlayedDAO
     			
     			games.add(gp);
     		}
-    		return null;
+    		return games;
     	}
     	finally {
             if (ps != null && !ps.isClosed()) {
@@ -242,23 +244,27 @@ public class GamesPlayedDAOImpl implements GamesPlayedDAO
     @Override
     public int update(Connection connection, GamesPlayed gamesPlayed) throws SQLException, DAOException
     {
-        if(gamesPlayed = null) {
+        if(gamesPlayed == null) {
         	throw new DAOException("Must provide GamesPlayed to be updated");
         }
+        
+        PreparedStatement ps = null;
+        
         try {
 	        ps = connection.prepareStatement(updateSQL);
 	
 	        Long id = gamesPlayed.getId();
 	        Long pID = gamesPlayed.getPlayerID();
 	        Long gID = gamesPlayed.getGameID();
-	        date timeFinished = gamesPlayed.getTimeFinished();
+	        Date timeFinished = gamesPlayed.getTimeFinished();
 	        int score = gamesPlayed.getScore();
 	        
-	        ps.setLong(1, id);
-	        ps.setLong(2, pID);
-	        ps.setLong(3, gID);
-	        ps.setDate(4, timeFinished);
-	        ps.setInt(5, score);
+	        
+	        ps.setLong(1, pID);
+	        ps.setLong(2, gID);
+	        ps.setDate(3, new java.sql.Date(timeFinished.getTime()));
+	        ps.setInt(4, score);
+	        ps.setLong(5, id);
 	        int rows = ps.executeUpdate();
 	        return rows;
         }

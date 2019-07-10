@@ -89,6 +89,9 @@ public class PlayerServiceImpl implements PlayerService
             Player p1 = playerDAO.retrieve(connection, playerID);
             connection.commit();
             return p1;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
         }
         finally {
         	if(connection != null) {
@@ -119,6 +122,9 @@ public class PlayerServiceImpl implements PlayerService
             int upd = playerDAO.update(connection, player);
             connection.commit();
             return upd;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
         }
         finally {
         	if(connection != null) {
@@ -149,6 +155,9 @@ public class PlayerServiceImpl implements PlayerService
              ccDAO.deleteForPlayer(connection, playerID);
              connection.commit();
              return del;
+         }catch (Exception ex) {
+             connection.rollback();
+             throw ex;
          }
          finally {
          	if(connection != null) {
@@ -173,6 +182,9 @@ public class PlayerServiceImpl implements PlayerService
         	int count = playerDAO.count(connection);
         	connection.commit();
         	return count;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
         }
         finally {
          	if(connection != null) {
@@ -200,7 +212,11 @@ public class PlayerServiceImpl implements PlayerService
         	connection.setAutoCommit(false);
     		List<Player> pList = new ArrayList<>();
     		pList = playerDAO.retrieveByJoinDate(connection, start, end);
+    		connection.commit();
     		return pList;
+        }catch (Exception ex) {
+            connection.rollback();
+            throw ex;
         }
         finally {
          	if(connection != null) {

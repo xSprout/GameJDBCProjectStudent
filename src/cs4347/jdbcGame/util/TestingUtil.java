@@ -76,7 +76,7 @@ public class TestingUtil
 
     // This query retrieves all game IDs in the result set
     // e.g. "select id from game"
-    static String selectGameIDs = "SELECT id FROM game";
+    static String selectGameIDs = "select id from games";
 
     /**
      * Return N current Game IDs for testing purposes.
@@ -103,7 +103,7 @@ public class TestingUtil
 
     // This query will return the distinct game IDs being played by the given player ID. 
     // e.g. "select distinct game_id from games_played where player_id = ?"
-    static String selectDistinctPlayedGameIDs = "SELECT DISTINCT gameID FROM games_played WHERE playerID = ?";
+    static String selectDistinctPlayedGameIDs = "select distinct gameID from gamesplayed where playerID = ?";
     
     static public List<Long> retrieveGamesPlayedForPlayer(DataSource ds, Long playerID) throws Exception
     {

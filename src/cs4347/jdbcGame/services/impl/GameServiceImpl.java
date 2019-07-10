@@ -10,12 +10,16 @@
  */
 package cs4347.jdbcGame.services.impl;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.sql.DataSource;
 
+import cs4347.jdbcGame.dao.GameDAO;
+import cs4347.jdbcGame.dao.impl.GameDAOImpl;
 import cs4347.jdbcGame.entity.Game;
 import cs4347.jdbcGame.services.GameService;
 import cs4347.jdbcGame.util.DAOException;
@@ -33,43 +37,187 @@ public class GameServiceImpl implements GameService
     @Override
     public Game create(Game game) throws DAOException, SQLException
     {
-        return null;
+    	if (game.getId() != null) {
+            throw new DAOException("Trying to insert Game with NON-NULL ID");
+        }
+    	GameDAO gameDAO = new GameDAOImpl();
+    	Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            Game g1 = gameDAO.create(connection, game);
+            connection.commit();
+            return g1;
+        } catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+            if (connection != null) {
+                connection.setAutoCommit(true);
+            }
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
     }
 
     @Override
     public Game retrieve(long gameID) throws DAOException, SQLException
     {
-        return null;
+    	if (Objects.isNull(gameID)) {
+            throw new DAOException("Trying to retrieve a Game with NULL ID");
+        }
+    	GameDAO gameDAO = new GameDAOImpl();
+    	Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            Game g1 = gameDAO.retrieve(connection, gameID);
+            connection.commit();
+            return g1;
+        } catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+            if (connection != null) {
+                connection.setAutoCommit(true);
+            }
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
     }
 
     @Override
     public int update(Game game) throws DAOException, SQLException
     {
-        return 0;
+    	if (game.getId() == null) {
+            throw new DAOException("Trying to update Game with NULL ID");
+        }
+    	GameDAO gameDAO = new GameDAOImpl();
+    	Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            int g1 = gameDAO.update(connection, game);
+            connection.commit();
+            return g1;
+        } catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+            if (connection != null) {
+                connection.setAutoCommit(true);
+            }
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
     }
 
     @Override
     public int delete(long gameID) throws DAOException, SQLException
     {
-        return 0;
+    	if (Objects.isNull(gameID)) {
+            throw new DAOException("Trying to delete a Game with NULL ID");
+        }
+    	GameDAO gameDAO = new GameDAOImpl();
+    	Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            int g1 = gameDAO.delete(connection, gameID);
+            connection.commit();
+            return g1;
+        } catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+            if (connection != null) {
+                connection.setAutoCommit(true);
+            }
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
     }
 
     @Override
     public int count() throws DAOException, SQLException
     {
-        return 0;
+    	GameDAO gameDAO = new GameDAOImpl();
+    	Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            int g1 = gameDAO.count(connection);
+            connection.commit();
+            return g1;
+        } catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+            if (connection != null) {
+                connection.setAutoCommit(true);
+            }
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
     }
 
     @Override
     public List<Game> retrieveByTitle(String titlePattern) throws DAOException, SQLException
     {
-        return null;
+    	if(titlePattern == null) {
+    		throw new DAOException("Trying to retrieve a Game with NULL Title");
+    	}
+    	GameDAO gameDAO = new GameDAOImpl();
+    	Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            List<Game> g1 = gameDAO.retrieveByTitle(connection, titlePattern);
+            connection.commit();
+            return g1;
+        } catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+            if (connection != null) {
+                connection.setAutoCommit(true);
+            }
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
     }
 
     @Override
     public List<Game> retrieveByReleaseDate(Date start, Date end) throws DAOException, SQLException
     {
-        return null;
+    	if(start == null || end == null) {
+    		throw new DAOException("Trying to retrieve a Game with NULL Date");
+    	}
+    	GameDAO gameDAO = new GameDAOImpl();
+    	Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            List<Game> g1 = gameDAO.retrieveByReleaseDate(connection, start, end);
+            connection.commit();
+            return g1;
+        } catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        }
+        finally {
+            if (connection != null) {
+                connection.setAutoCommit(true);
+            }
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
     }
 
 }
